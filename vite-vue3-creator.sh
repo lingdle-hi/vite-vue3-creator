@@ -267,16 +267,16 @@ echo \
   header: \'yto changelog\',
   issueUrlFormat: \'{{homepage}}/issues/{{id}}\',
   types: [
-    { type: \'feat\', section: \'新增功能\', hidden: true },
-    { type: \'fix\', section: \'bug修复\', hidden: true },
-    { type: \'docs\', section: \'文档变更\', hidden: true },
-    { type: \'style\', section: \'格式变更\', hidden: true },
-    { type: \'refactor\', section: \'代码重构\', hidden: true },
-    { type: \'perf\', section: \'性能优化\', hidden: true },
-    { type: \'test\', section: \'测试变更\', hidden: true },
-    { type: \'chore\', section: \'例行升级\', hidden: true },
-    { type: \'conflict\', section: \'解决冲突\', hidden: true },
-    { type: \'revert\', section: \'版本回退\', hidden: true },
+    { type: \'feat\', section: \'新增功能\', hidden: false },
+    { type: \'fix\', section: \'bug修复\', hidden: false },
+    { type: \'docs\', section: \'文档变更\', hidden: false },
+    { type: \'style\', section: \'格式变更\', hidden: false },
+    { type: \'refactor\', section: \'代码重构\', hidden: false },
+    { type: \'perf\', section: \'性能优化\', hidden: false },
+    { type: \'test\', section: \'测试变更\', hidden: false },
+    { type: \'chore\', section: \'例行升级\', hidden: false },
+    { type: \'conflict\', section: \'解决冲突\', hidden: false },
+    { type: \'revert\', section: \'版本回退\', hidden: false },
   ],
 };
 " > .versionrc.js
@@ -296,7 +296,7 @@ npx json-merge-cli \
 --params.scripts.release:beta "standard-version --prerelease beta" \
 --params.scripts.release:rc "standard-version --prerelease rc" \
 --params.gitHooks.commit-msg "commitlint -E GIT_PARAMS" \
---params.gitHooks.pre-push "lint-staged"
+--params.gitHooks.pre-commit "lint-staged"
 echo \
 "module.exports = {
   \'*.{js,jsx,vue,ts,tsx}\': [\'yarn lint --fix\', \'yarn prettier\', \'git add .\'],
