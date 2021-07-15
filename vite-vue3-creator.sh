@@ -36,7 +36,7 @@ cd '$APP_NAME'
 ./setup.sh
 ```
 
-### 3. workflow: dev -> comit -> release -> push
+### 3. workflow: dev -> commit -> release -> push
 ```bash
 yarn install
 yarn dev
@@ -266,7 +266,7 @@ echoe "standard-version init..."
 yarn add -D standard-version
 echo \
 "module.exports = {
-  header: \'yto changelog\',
+  header: \'Changelog\',
   issueUrlFormat: \'{{homepage}}/issues/{{id}}\',
   types: [
     { type: \'feat\', section: \'新增功能\', hidden: false },
@@ -301,7 +301,7 @@ npx json-merge-cli \
 --params.gitHooks.pre-commit "lint-staged"
 echo \
 "module.exports = {
-  \'*.{js,jsx,vue,ts,tsx}\': [\'yarn lint --fix\', \'yarn prettier\', \'git add .\'],
+  \'*.{js,jsx,vue,ts,tsx}\': [\'eslint --fix --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js \', \'prettier --write --ignore-unknown\', \'git add\'],
 };
 " > .lintstagedrc.js
 
