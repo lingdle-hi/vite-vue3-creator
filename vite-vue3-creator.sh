@@ -22,6 +22,8 @@ README='# '$APP_NAME'
 ### 前置条件
 - 已安装最新版 node : v14.17.0+
 - npm install yarn : 1.22.10+ (不要使用yarn2)
+- 了解 语义化版本 公约: https://semver.org/lang/zh-CN/
+- 了解 约定式提交 公约: https://www.conventionalcommits.org/zh-hans/v1.0.0/
 
 ### 1. create application 仅创建新项目时使用
 ```bash
