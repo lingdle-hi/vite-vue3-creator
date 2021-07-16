@@ -250,7 +250,7 @@ npx json-merge-cli \
 --params.gitHooks.pre-push "lint-staged"
 echo \
 "module.exports = {
-  '*.{js,jsx,vue,ts,tsx}': ['yarn lint --fix', 'yarn prettier', 'git add .'],
+  '*.{js,jsx,vue,ts,tsx}': ['eslint --fix --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js ', 'prettier --write --ignore-unknown'],
 };
 " > .lintstagedrc.js
 
