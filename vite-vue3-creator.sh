@@ -301,7 +301,7 @@ npx json-merge-cli \
 --params.gitHooks.pre-commit "lint-staged"
 echo \
 "module.exports = {
-  \'*.{js,jsx,vue,ts,tsx}\': [\'eslint --fix --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js \', \'prettier --write --ignore-unknown\', \'git add\'],
+  \'*.{js,jsx,vue,ts,tsx}\': [\'eslint --fix --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js \', \'prettier --write --ignore-unknown\'],
 };
 " > .lintstagedrc.js
 
