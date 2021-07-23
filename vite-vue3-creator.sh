@@ -1,22 +1,17 @@
 #!/bin/bash
-# Quick Start for 
-# Vite + Vue3 + Typescript + Eslint + Prettier  
+# Quick Start for
+# Vite + Vue3 + Typescript + Eslint + Prettier
 # lint-staged + commit-lint + standard-version
 set -e
 echoe(){
-  echo -e "\033[32m$*\033[0m"	
+  echo -e "\033[32m$*\033[0m"
 }
 
-if [ $# -eq 0 ]; then
-    echo "No arguments provided"
-    exit 1
-fi
+echo_readme(){
+  echo '# '$1'
+## Quick Start for
 
-APP_NAME=$1
-README='# '$APP_NAME'
-## Quick Start for 
-
-> Vite + Vue3 + Typescript + Eslint + Prettier  
+> Vite + Vue3 + Typescript + Eslint + Prettier
 > lint-staged + commit-lint + standard-version
 
 ### 前置条件
@@ -27,12 +22,12 @@ README='# '$APP_NAME'
 
 ### 1. create application 仅创建新项目时使用
 ```bash
-./vite-vue3-creator.sh '$APP_NAME'
+./vite-vue3-creator.sh '$1'
 
 ```
 ### 2. run setup 仅第一次初始化项目时运行
 ```bash
-cd '$APP_NAME'
+cd '$1'
 ./setup.sh
 ```
 
@@ -63,20 +58,28 @@ yarn release:rc
 ```
 
 ### 常见问题
-- 需要转换个别文件的(yarn.lock) CRLF > LF 
+- 需要转换个别文件的(yarn.lock) CRLF > LF
 - 需要启用 WebStorm/ide/VSCode 的 eslint/prettier 插件配置
   - pattern : `{**/*,*}.{js,ts,jsx,tsx,html,vue}`
   - WebStorm eslint 插件设为 Automatic Eslint configuration, 禁用 Run eslint --fix on Save
   - WebStorm Prettier 插件设为当前项目 Prettier;启用 On code format 和 On Save'
+}
 
-# create vue3-ts app by vite 
+if [ $# -eq 0 ]; then
+    echo "No arguments provided"
+    exit 1
+fi
+
+APP_NAME=$1
+
+# create vue3-ts app by vite
 echoe "create vite application $APP_NAME..."
 yarn create @vitejs/app $APP_NAME --template vue-ts
 
 cd $APP_NAME
 
 echoe 'create README.md...'
-echo "$README" > README.md
+echo_readme $APP_NAME > README.md
 
 # npm init
 echoe "npm init..."
@@ -102,10 +105,10 @@ Thumbs.db
 echoe "create setup.sh..."
 echo \
 $'#!/bin/bash
-# Quick Start for 
-# Vite + Vue3 + Typescript + Eslint + Prettier  
+# Quick Start for
+# Vite + Vue3 + Typescript + Eslint + Prettier
 # lint-staged + commit-lint + standard-version
-set -e
+set +e
 echoe(){
   echo -e "\\033[32m$*\\033[0m"
 }
@@ -113,18 +116,18 @@ APP_NAME="${PWD##*/}"
 echoe "start setup $APP_NAME..."
 
 OLD_README="$(cat README.md)"
-NEW_README=$\''"$README"$'\'
+NEW_README=$\''"$(echo_readme $'\'$APP_NAME$\'')"$'\'
 
 if [ "$OLD_README" != "$NEW_README" ]
 then
 echoe "update README.md..."
 echo "$NEW_README
 $OLD_README
-" > NEW_README.md
+" > README.md
 fi
 
-# set git commit template
-echoe "set git commit template : .git-commit-template..."
+# set git config
+echoe "set git config start..."
 echo \
 "
 # eg.  fix(user): fix bug #12345
@@ -160,8 +163,15 @@ echo \
 # ---------------------
 # 遵循 conventional commits 标准 ： https://www.conventionalcommits.org/zh-hans/v1.0.0/
 # ---------------------
-" > .git-commit-template && git config --local commit.template .git-commit-template
+" > .git-commit-template 
 
+set -x
+git config --global commit.template .git-commit-template
+git config --unset core.hookspath
+git config --global core.editor vim
+git config --global core.autocrlf input
+git config --global core.safecrlf true
+set +x
 
 # linter init
 echoe "linter init..."
@@ -291,17 +301,17 @@ npx json-merge-cli \
 --src package.json \
 --dest package.json \
 --params.scripts.lint "eslint . --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js" \
---params.scripts.prettier "prettier . --write --ignore-unknown" \
+--params.scripts.prettier "prettier . --write --ignore-unknown --check --config ./.prettierrc.js" \
 --params.scripts.precommit "git add . && git commit" \
 --params.scripts.release "standard-version" \
 --params.scripts.release:alpha "standard-version --prerelease alpha" \
 --params.scripts.release:beta "standard-version --prerelease beta" \
 --params.scripts.release:rc "standard-version --prerelease rc" \
 --params.gitHooks.commit-msg "commitlint -E GIT_PARAMS" \
---params.gitHooks.pre-commit "lint-staged"
+--params.gitHooks.pre-commit "lint-staged --verbose --config ./.lintstagedrc.js"
 echo \
 "module.exports = {
-  \'*.{js,jsx,vue,ts,tsx}\': [\'eslint --fix --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js \', \'prettier --write --ignore-unknown\'],
+  \'*.{js,jsx,vue,ts,tsx}\': [\'eslint --fix --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js \', \'prettier --write --ignore-unknown --check --config ./.prettierrc.js\'],
 };
 " > .lintstagedrc.js
 
