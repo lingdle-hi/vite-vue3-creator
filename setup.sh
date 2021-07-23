@@ -1,8 +1,8 @@
 #!/bin/bash
-# Quick Start for 
-# Vite + Vue3 + Typescript + Eslint + Prettier  
+# Quick Start for
+# Vite + Vue3 + Typescript + Eslint + Prettier
 # lint-staged + commit-lint + standard-version
-set -e
+set +e
 echoe(){
   echo -e "\033[32m$*\033[0m"
 }
@@ -10,28 +10,30 @@ APP_NAME="${PWD##*/}"
 echoe "start setup $APP_NAME..."
 
 OLD_README="$(cat README.md)"
-NEW_README=$'# vite-vue3-demo
-## Quick Start for 
+NEW_README=$'# '$APP_NAME$'
+## Quick Start for
 
-> Vite + Vue3 + Typescript + Eslint + Prettier  
+> Vite + Vue3 + Typescript + Eslint + Prettier
 > lint-staged + commit-lint + standard-version
 
 ### 前置条件
 - 已安装最新版 node : v14.17.0+
 - npm install yarn : 1.22.10+ (不要使用yarn2)
+- 了解 语义化版本 公约: https://semver.org/lang/zh-CN/
+- 了解 约定式提交 公约: https://www.conventionalcommits.org/zh-hans/v1.0.0/
 
 ### 1. create application 仅创建新项目时使用
 ```bash
-./vite-vue3-creator.sh vite-vue3-demo
+./vite-vue3-creator.sh '$APP_NAME$'
 
 ```
 ### 2. run setup 仅第一次初始化项目时运行
 ```bash
-cd vite-vue3-demo
+cd '$APP_NAME$'
 ./setup.sh
 ```
 
-### 3. workflow: dev -> comit -> release -> push
+### 3. workflow: dev -> commit -> release -> push
 ```bash
 yarn install
 yarn dev
@@ -58,7 +60,7 @@ yarn release:rc
 ```
 
 ### 常见问题
-- 需要转换个别文件的(yarn.lock) CRLF > LF 
+- 需要转换个别文件的(yarn.lock) CRLF > LF
 - 需要启用 WebStorm/ide/VSCode 的 eslint/prettier 插件配置
   - pattern : `{**/*,*}.{js,ts,jsx,tsx,html,vue}`
   - WebStorm eslint 插件设为 Automatic Eslint configuration, 禁用 Run eslint --fix on Save
@@ -69,11 +71,11 @@ then
 echoe "update README.md..."
 echo "$NEW_README
 $OLD_README
-" > NEW_README.md
+" > README.md
 fi
 
-# set git commit template
-echoe "set git commit template : .git-commit-template..."
+# set git config
+echoe "set git config start..."
 echo \
 "
 # eg.  fix(user): fix bug #12345
@@ -109,9 +111,15 @@ echo \
 # ---------------------
 # 遵循 conventional commits 标准 ： https://www.conventionalcommits.org/zh-hans/v1.0.0/
 # ---------------------
-" > .git-commit-template && git config --local commit.template .git-commit-template
+" > .git-commit-template 
 
-
+set -x
+git config --global commit.template .git-commit-template
+git config --unset core.hookspath
+git config --global core.editor vim
+git config --global core.autocrlf input
+git config --global core.safecrlf true
+set +x
 # linter init
 echoe "linter init..."
 yarn add -D eslint eslint-plugin-vue eslint-plugin-promise eslint-plugin-node eslint-plugin-import @vue/eslint-config-standard @vue/eslint-config-typescript @typescript-eslint/parser @typescript-eslint/eslint-plugin
@@ -215,19 +223,19 @@ echoe "standard-version init..."
 yarn add -D standard-version
 echo \
 "module.exports = {
-  header: 'yto changelog',
+  header: 'Changelog',
   issueUrlFormat: '{{homepage}}/issues/{{id}}',
   types: [
-    { type: 'feat', section: '新增功能', hidden: true },
-    { type: 'fix', section: 'bug修复', hidden: true },
-    { type: 'docs', section: '文档变更', hidden: true },
-    { type: 'style', section: '格式变更', hidden: true },
-    { type: 'refactor', section: '代码重构', hidden: true },
-    { type: 'perf', section: '性能优化', hidden: true },
-    { type: 'test', section: '测试变更', hidden: true },
-    { type: 'chore', section: '例行升级', hidden: true },
-    { type: 'conflict', section: '解决冲突', hidden: true },
-    { type: 'revert', section: '版本回退', hidden: true },
+    { type: 'feat', section: '新增功能', hidden: false },
+    { type: 'fix', section: 'bug修复', hidden: false },
+    { type: 'docs', section: '文档变更', hidden: false },
+    { type: 'style', section: '格式变更', hidden: false },
+    { type: 'refactor', section: '代码重构', hidden: false },
+    { type: 'perf', section: '性能优化', hidden: false },
+    { type: 'test', section: '测试变更', hidden: false },
+    { type: 'chore', section: '例行升级', hidden: false },
+    { type: 'conflict', section: '解决冲突', hidden: false },
+    { type: 'revert', section: '版本回退', hidden: false },
   ],
 };
 " > .versionrc.js
@@ -240,17 +248,17 @@ npx json-merge-cli \
 --src package.json \
 --dest package.json \
 --params.scripts.lint "eslint . --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js" \
---params.scripts.prettier "prettier . --write --ignore-unknown" \
+--params.scripts.prettier "prettier . --write --ignore-unknown --check --config ./.prettierrc.js" \
 --params.scripts.precommit "git add . && git commit" \
 --params.scripts.release "standard-version" \
 --params.scripts.release:alpha "standard-version --prerelease alpha" \
 --params.scripts.release:beta "standard-version --prerelease beta" \
 --params.scripts.release:rc "standard-version --prerelease rc" \
 --params.gitHooks.commit-msg "commitlint -E GIT_PARAMS" \
---params.gitHooks.pre-push "lint-staged"
+--params.gitHooks.pre-commit "lint-staged --verbose --config ./.lintstagedrc.js"
 echo \
 "module.exports = {
-  '*.{js,jsx,vue,ts,tsx}': ['eslint --fix --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js ', 'prettier --write --ignore-unknown'],
+  '*.{js,jsx,vue,ts,tsx}': ['eslint --fix --ext .js,.jsx,.vue,.ts,.tsx -c ./.eslintrc.js ', 'prettier --write --ignore-unknown --check --config ./.prettierrc.js'],
 };
 " > .lintstagedrc.js
 
@@ -259,4 +267,3 @@ echoe "setup done. now run:
   yarn prettier
   yarn precommit"
 exit
-
